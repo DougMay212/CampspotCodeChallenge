@@ -1,12 +1,16 @@
 package com.doug.may
 
+import com.doug.may.model.Campsite
 import com.doug.may.model.InputFile
+import com.doug.may.service.CampsiteReservationService
 import com.fasterxml.jackson.databind.ObjectMapper
 
 import java.text.SimpleDateFormat
 
 class CampspotCodeChallenge {
     public static final SimpleDateFormat EXPECTED_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd")
+
+    private static CampsiteReservationService campsiteReservationService = new CampsiteReservationService()
 
     public static void main(String[] args) {
         if (!args || args.length > 1) {
@@ -32,6 +36,13 @@ class CampspotCodeChallenge {
         println "  ... Searching ${input.campsites?.size()} campsites."
         println "  ... with ${input.reservations?.size()} existing reservations."
         println "  ... and applying ${input.gapRules?.size()} gap rules."
-        println "  ... To be continued..."
+        println ""
+
+        campsiteReservationService.persistCampsitesAndExistingReservations(input)
+
+        println "Available Campsites:"
+        List<Campsite> availableCampsites = campsiteReservationService.findAllAvailableCampsites(input.search, input.gapRules)
+        availableCampsites?.each { println "  ${it.name}" }
+        if (!availableCampsites) println "  None"
     }
 }
