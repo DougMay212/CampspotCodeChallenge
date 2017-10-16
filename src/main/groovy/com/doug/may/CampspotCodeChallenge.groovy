@@ -30,14 +30,27 @@ class CampspotCodeChallenge {
         mapper.setDateFormat(EXPECTED_DATE_FORMAT)
         InputFile input = mapper.readValue(inputFile, InputFile.class)
 
+        if(!input.search) {
+            println "ERROR: the input file did not contain a search period."
+            return
+        }
+        if(!input.campsites) {
+            println "ERROR: No campsites were provided."
+            return
+        }
+
         println "Searching for campsite availability between " +
                 "${EXPECTED_DATE_FORMAT.format(input.search.startDate)} and " +
                 "${EXPECTED_DATE_FORMAT.format(input.search.endDate)}..."
-        println "  ... Searching ${input.campsites?.size()} campsites."
-        println "  ... with ${input.reservations?.size()} existing reservations."
-        println "  ... and applying ${input.gapRules?.size()} gap rules."
+        println "  ... Searching ${input.campsites.size()} campsites."
+        println "  ... with ${input.reservations? input.reservations.size() : 'no'} existing reservations."
+        println "  ... and applying ${input.gapRules ? input.gapRules.size() : 'no'} gap rules."
         println ""
 
+        evaluateInput(input)
+    }
+
+    private static void evaluateInput(InputFile input) {
         campsiteReservationService.persistCampsitesAndExistingReservations(input)
 
         println "Available Campsites:"
