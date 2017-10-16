@@ -6,6 +6,7 @@ import com.doug.may.model.InputFile
 import com.doug.may.model.Search
 
 class CampsiteReservationService {
+
     private campsiteDao = new MockCampsiteDao()
     private reservationDao = new MockReservationDao()
 
@@ -15,7 +16,26 @@ class CampsiteReservationService {
     }
 
     public List<Campsite> findAllAvailableCampsites(Search search, Set<GapRule> gapRules) {
-        //TODO: Actually implement this
-        return []
+        List<Campsite> availableCampsites = []
+        List<Date> forbiddenStartDates = []
+        List<Date> forbiddenEndDates = []
+        gapRules?.each {
+            forbiddenEndDates.add(computeDateShiftedByNDays(search.startDate, -1 * it.gapSize))
+            forbiddenStartDates.add(computeDateShiftedByNDays(search.endDate, it.gapSize))
+        }
+        campsiteDao.retrieveAllCampsites()?.each { campsite ->
+            if (!reservationDao.existReservationsByCampsiteThatOverlapWith(campsite.id, search) &&
+                    !reservationDao.existReservationsByCampsiteWithStartDatesOrEndDates(campsite.id, forbiddenStartDates, forbiddenEndDates)) {
+                availableCampsites.add(campsite)
+            }
+        }
+        return availableCampsites
+    }
+
+    private Date computeDateShiftedByNDays(Date original, int offsetInDays) {
+        Calendar calendar = new GregorianCalendar()
+        calendar.setTime(original)
+        calendar.add(Calendar.DATE, offsetInDays)
+        return calendar.getTime()
     }
 }

@@ -16,7 +16,7 @@ class MockCampsiteDaoSpec {
         MockCampsiteDao campsiteDao = new MockCampsiteDao()
         campsiteDao.persistCampsites(campsites as Set)
 
-        assertEquals(3, campsiteDao.campsites.size())
+        assertEquals(3, campsiteDao.campsitesById.size())
         assertEquals(campsite1, campsiteDao.findCampsiteById(1L))
         assertEquals(campsite2, campsiteDao.findCampsiteById(2L))
         assertEquals(campsite3, campsiteDao.findCampsiteById(3L))
@@ -28,6 +28,6 @@ class MockCampsiteDaoSpec {
         MockCampsiteDao campsiteDao = new MockCampsiteDao()
         campsiteDao.persistCampsite(null)
 
-        assertEquals(0, campsiteDao.campsites.size())
+        assertEquals(0, campsiteDao.campsitesById.size())
     }
 }

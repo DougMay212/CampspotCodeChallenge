@@ -4,7 +4,13 @@ import com.doug.may.CampspotCodeChallenge
 import com.doug.may.model.InputFile
 import com.fasterxml.jackson.databind.ObjectMapper
 
+import java.text.ParseException
+import java.text.SimpleDateFormat
+
 class TestUtil {
+
+    private static final SimpleDateFormat DATE = new SimpleDateFormat('MM/dd/yyyy H:mm')
+
     public static InputFile readFile(String fileName) {
         File file = new File(getClass().getResource("/${fileName}.json")?.getFile())
         if (!file.exists()) {
@@ -17,6 +23,11 @@ class TestUtil {
     }
 
     public static Date date(String date) {
-        return CampspotCodeChallenge.EXPECTED_DATE_FORMAT.parse(date)
+        try {
+            return CampspotCodeChallenge.EXPECTED_DATE_FORMAT.parse(date)
+        } catch (ParseException exception) {
+            return DATE.parse(date)
+        }
+
     }
 }

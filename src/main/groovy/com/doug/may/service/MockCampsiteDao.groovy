@@ -8,7 +8,8 @@ import com.doug.may.model.Campsite
  *  Its purpose is to make accessing campsites quicker by storing them in a Map indexed by their IDs
  */
 class MockCampsiteDao {
-    private Map<Long, Campsite> campsites = [:]
+    private List<Campsite> campsites = []
+    private Map<Long, Campsite> campsitesById = [:]
 
     public void persistCampsites(Set<Campsite> campsites) {
         campsites?.each { persistCampsite(it) }
@@ -17,10 +18,15 @@ class MockCampsiteDao {
     public void persistCampsite(Campsite campsite) {
         if (!campsite) return
 
-        campsites.put(campsite.id, campsite)
+        campsites.add(campsite)
+        campsitesById.put(campsite.id, campsite)
     }
 
     public Campsite findCampsiteById(long id) {
-        return campsites.get(id)
+        return campsitesById.get(id)
+    }
+
+    public List<Campsite> retrieveAllCampsites() {
+        return campsites
     }
 }
